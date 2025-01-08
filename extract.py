@@ -2,7 +2,16 @@ import os.path
 import sys
 import subprocess
 
-ISOS = ["SLUS-20685"]
+ISOS = [
+    "SLUS-20685",  # USA
+    "SCCS-40001",  # China(?)
+    "SCES-50885",  # Europe
+    "SCES-51102",  # France
+    "SCES-51104",  # Germany
+    "SCES-51103",  # Italy
+    "SCES-51105",  # Spain
+    "SCPS-15025",  # Original Japanese release
+]
 
 for iso in ISOS:
     if not os.path.isfile(f"isos/{iso}.iso"):
