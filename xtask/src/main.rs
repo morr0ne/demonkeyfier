@@ -1,5 +1,6 @@
 use anyhow::{Context, Result, bail};
 use clap::{Parser, Subcommand};
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::fs;
 use xshell::{Shell, cmd};
 
@@ -40,23 +41,32 @@ fn main() -> Result<()> {
                 }
             }
 
-            let sh = Shell::new()?;
-
             if fs::exists("extracted")? {
                 fs::remove_dir_all("extracted")?;
             }
 
             fs::create_dir_all("extracted")?;
 
-            for version in VERSIONS {
+            VERSIONS.par_iter().try_for_each(|version| {
+                eprintln!("Extracting {version}...");
+                let sh = Shell::new()?;
+
                 fs::create_dir_all(format!("extracted/{version}"))?;
 
                 cmd!(
                     sh,
                     "bsdtar -xpkvf isos/{version}.iso -C extracted/{version}"
                 )
-                .run()?;
-            }
+                .ignore_stdout()
+                .ignore_stderr()
+                .quiet()
+                .run()
+                .context("Failed to extract iso")?;
+
+                eprintln!("Extracted {version} successfully");
+
+                anyhow::Ok(())
+            })?;
         }
     }
 
