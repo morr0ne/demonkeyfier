@@ -1,8 +1,5 @@
-[workspace]
-members = ["xtask"]
-
 [package]
-name = "demonkeyfier"
+name = "xtask"
 version = "0.1.0"
 edition = "2024"
 
